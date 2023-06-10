@@ -8,7 +8,7 @@ def _group_matching_lines(
     lines: Sequence[str], pattern: str, min_group_size: int = 2
 ) -> Sequence[Sequence[int]]:
     """
-    Given a list of lines and a regex pattern, return a list of groups of sorted line numbers
+    Given a list of lines and a regex pattern, return a sorted list of groups of sorted line numbers
     where each group contains at least min_group_size consecutive lines matching the pattern.
     """
     lines = (i for i, line in enumerate(lines) if re.match(pattern, line))
@@ -44,7 +44,7 @@ def collapse_rparen_lines(lines: Sequence[str]) -> None:
     rparen_or_ws_pattern = r"[\]\)\},\s]"
     rparen_pattern = r"^\s*" + rparen_only_pattern + rparen_or_ws_pattern + r"*$"
 
-    for group in _group_matching_lines(lines, rparen_pattern):
+    for group in reversed(_group_matching_lines(lines, rparen_pattern)):
         _merge_lines(lines, group)
 
 
@@ -57,7 +57,7 @@ def collapse_lparen_lines(lines: Sequence[str]) -> None:
     lparen_or_ws_pattern = r"[\[\(\{\s]"
     lparen_pattern = r"^\s*" + lparen_only_pattern + lparen_or_ws_pattern + r"*$"
 
-    for group in _group_matching_lines(lines, lparen_pattern):
+    for group in reversed(_group_matching_lines(lines, lparen_pattern)):
         _merge_lines(lines, group)
 
     for start, *_ in reversed(_group_matching_lines(lines, lparen_pattern, 1)):
