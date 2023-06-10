@@ -23,8 +23,8 @@ jobs:
         python ./tests/main.py
     - name: Running on self
       run: |
-        compactify .
-        python -m compactify .
+        compactify ./compactify
+        python -m compactify ./compactify
         cat ./compactify/main.py | python -m compactify --from-stdin
     - name: Install as editable
       run: |
@@ -51,7 +51,7 @@ jobs:
     - name: Running unit tests
       run: python ./tests/main.py
     - name: Run on self
-      run: compactify .
+      run: compactify ./compactify
     - name: Rerun unit tests
       run: python ./tests/main.py
 
@@ -73,7 +73,7 @@ jobs:
     - name: Running unit tests
       run: python ./tests/main.py
     - name: Run on self
-      run: compactify .
+      run: compactify ./compactify
     - name: Rerun unit tests
       run: python ./tests/main.py
 
