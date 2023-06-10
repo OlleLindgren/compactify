@@ -23,7 +23,7 @@ jobs:
         python ./tests/main.py
     - name: Running on self
       run: |
-        compactify . --safe
+        compactify .
         python -m compactify .
         cat ./compactify/main.py | python -m compactify --from-stdin
     - name: Install as editable
