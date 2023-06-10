@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "compactify"
 version = "1"
-description = "Automated Python refactoring"
+description = "Make Python code more compact"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
