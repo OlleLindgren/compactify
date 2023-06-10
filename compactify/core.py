@@ -3,6 +3,8 @@ import re
 from pathlib import Path
 from typing import Sequence
 
+from compactify import logs as logger
+
 
 def _group_matching_lines(
     lines: Sequence[str], pattern: str, min_group_size: int = 2
@@ -40,8 +42,8 @@ def collapse_rparen_lines(lines: Sequence[str]) -> None:
     For all consecutive lines matching rparen_pattern, collapse them into one line,
     remove all whitespace, and indent as much as the least indented line.
     """
-    rparen_only_pattern = r"[\]\)\},]"
-    rparen_or_ws_pattern = r"[\]\)\},\s]"
+    rparen_only_pattern = r"[\]\)\},:]"
+    rparen_or_ws_pattern = r"[\]\)\},:\s]"
     rparen_pattern = r"^\s*" + rparen_only_pattern + rparen_or_ws_pattern + r"*$"
 
     for group in reversed(_group_matching_lines(lines, rparen_pattern)):

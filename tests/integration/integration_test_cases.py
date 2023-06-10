@@ -249,4 +249,40 @@ print(
 ]))
         """,
     ),
+    (
+        """
+if (
+    isinstance(node.target, ast.Name)
+    and len(node.body) >= 2
+    and parsing.match_template(
+        test,
+        ast.UnaryOp(
+            op=ast.Not,
+            operand=ast.Call(keywords=[], args=[ast.Name(id=node.target.id)]),
+        ),
+    )
+    and not parsing.match_template(
+        second_node,
+        ast.If(body=[ast.Continue], test=ast.UnaryOp(op=ast.Not, operand=ast.Call)),
+    )
+):
+    pass
+        """,
+        """
+if (
+    isinstance(node.target, ast.Name)
+    and len(node.body) >= 2
+    and parsing.match_template(
+        test,
+        ast.UnaryOp(
+            op=ast.Not,
+            operand=ast.Call(keywords=[], args=[ast.Name(id=node.target.id)]),
+    ),)
+    and not parsing.match_template(
+        second_node,
+        ast.If(body=[ast.Continue], test=ast.UnaryOp(op=ast.Not, operand=ast.Call)),
+)):
+    pass
+        """,
+    ),
 )
