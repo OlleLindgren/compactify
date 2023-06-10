@@ -142,6 +142,9 @@ def format_code(source: str) -> str:
     collapse_lparen_lines(lines)
     remove_excessive_indent(lines)
 
+    if source.endswith(line_end_character):
+        lines.append("")
+
     new_source = line_end_character.join(lines)
 
     if not is_valid_python(source):
