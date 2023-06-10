@@ -59,7 +59,6 @@ def main(args: Sequence[str] | None = None) -> int:
         source = sys.stdin.read()
         temp_stdout = io.StringIO()
         sys_stdout = sys.stdout
-        preserve = set.union(*used_names.values()) if used_names else set()
         try:
             sys.stdout = temp_stdout
             source = format_code(source)
