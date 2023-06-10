@@ -70,6 +70,32 @@ def main() -> int:
 )
             """,
         ),
+        (
+            """
+
+def _only_if_uses_numpy(f: Callable) -> Callable:
+    def wrapper(source: str) -> str:
+        root = parsing.parse(source)
+        if not uses_numpy(root):
+            return source
+
+        return f(source)
+
+    return wrapper
+            """,
+            """
+
+def _only_if_uses_numpy(f: Callable) -> Callable:
+    def wrapper(source: str) -> str:
+        root = parsing.parse(source)
+        if not uses_numpy(root):
+            return source
+
+        return f(source)
+
+    return wrapper
+            """,
+        ),
     )
 
     for source, expected_abstraction in test_cases:

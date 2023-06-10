@@ -26,7 +26,7 @@ def _merge_lines(lines: Sequence[str], group: Sequence[int]) -> None:
     Merge the lines at the given indices into one line.
     """
     lines_subset = [lines[i] for i in group]
-    indent = min(len(line) - len(line.lstrip()) for line in lines_subset)
+    indent = min((len(line) - len(line.lstrip()) for line in lines_subset if line.strip()), default=0)
     indent_character = lines_subset[0][0]  # Won't be whitespace if indent==0, but that's fine
     new_line = indent * indent_character + re.sub(r"\s", "", "".join(lines_subset))
     for i in sorted(group, reverse=True):
@@ -86,10 +86,13 @@ def remove_excessive_indent(lines: Sequence[str]) -> None:
     ]
     best_indents = [indents[0]]
     for i, indent in enumerate(indents[1:], start=1):
-        # if re.match(r"[\]\)\}]", (lines[i].lstrip() + " ")[0]):
-        #     best_indents.append(min(indent, indents[i-1]))
-        # else:
-        best_indents.append(min(indent, indents[i-1] + 4))
+        previous_indent = 0
+        for j in range(i - 1, -1, -1):
+            if lines[j].strip():
+                previous_indent = indents[j]
+                break
+
+        best_indents.append(min(indent, previous_indent + 4))
 
     deindents = [0 for _ in lines]
 
