@@ -1,0 +1,124 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12.0-alpha.6", "pypy3.9"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .
+    - name: Running unit tests
+      run: |
+        python ./tests/main.py
+    - name: Running on self
+      run: |
+        compactify . --safe
+        python -m compactify .
+        cat ./compactify/main.py | python -m compactify --from-stdin
+    - name: Install as editable
+      run: |
+        pip install -e .
+    - name: Rerun unit tests
+      run: |
+        python ./tests/main.py
+
+  check-macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "pypy3.9"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .
+    - name: Running unit tests
+      run: python ./tests/main.py
+    - name: Run on self
+      run: compactify .
+    - name: Rerun unit tests
+      run: python ./tests/main.py
+
+  check-windows:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "pypy3.9"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .
+    - name: Running unit tests
+      run: python ./tests/main.py
+    - name: Run on self
+      run: compactify .
+    - name: Rerun unit tests
+      run: python ./tests/main.py
+
+  check-slow:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .
+    - name: Formatting numpy repo
+      run: |
+        ./tests/numpy.sh
+
+  deploy:
+    environment: deploy
+    needs: [check, check-macos, check-windows]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: technote-space/get-diff-action@v6
+      with:
+        FILES: |
+          pyproject.toml
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build
+    - name: Build package
+      run: python -m build
+    - name: Publish package
+      if: env.GIT_DIFF && env.MATCHED_FILES
+      uses: pypa/gh-action-pypi-publish@a56da0b891b3dc519c7ee3284aff1fad93cc8598
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_DEPLOY_TOKEN_MAINONLY }}
