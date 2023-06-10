@@ -2,17 +2,14 @@
 from __future__ import annotations
 
 import argparse
-import collections
 import io
 import logging
-import os
-import re
 import sys
 from pathlib import Path
-from typing import Collection, Iterable, Sequence
+from typing import Iterable, Sequence
 
 from compactify import logs as logger
-from compactify.core import format_file, format_code
+from compactify.core import format_code, format_file
 
 
 def _parse_args(args: Sequence[str]) -> argparse.Namespace:
