@@ -14,7 +14,9 @@ from compactify.core import format_code, format_file
 
 def _parse_args(args: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("paths", help="Paths to format", type=Path, nargs="*", default=())
+    parser.add_argument(
+        "paths", help="Paths to format", type=Path, nargs="*", default=()
+    )
     parser.add_argument(
         "--from-stdin", help="Recieve input source code from stdin", action="store_true"
     )

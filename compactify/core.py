@@ -28,8 +28,12 @@ def _merge_lines(lines: Sequence[str], group: Sequence[int]) -> None:
     Merge the lines at the given indices into one line.
     """
     lines_subset = [lines[i] for i in group]
-    indent = min((len(line) - len(line.lstrip()) for line in lines_subset if line.strip()), default=0)
-    indent_character = lines_subset[0][0]  # Won't be whitespace if indent==0, but that's fine
+    indent = min(
+        (len(line) - len(line.lstrip()) for line in lines_subset if line.strip()),
+        default=0,
+    )
+    # Won't be whitespace if indent==0, but that's fine
+    indent_character = lines_subset[0][0]
     new_line = indent * indent_character + re.sub(r"\s", "", "".join(lines_subset))
     for i in sorted(group, reverse=True):
         lines.pop(i)
@@ -63,12 +67,10 @@ def collapse_lparen_lines(lines: Sequence[str]) -> None:
         _merge_lines(lines, group)
 
     for start, *_ in reversed(_group_matching_lines(lines, lparen_pattern, 1)):
-        if start > 0 and re.match(
-            lparen_only_pattern,
-            (" " + lines[start - 1].rstrip())[-1]
-        ) and re.match(
-            lparen_only_pattern,
-            (lines[start].lstrip() + " ")[0]
+        if (
+            start > 0
+            and re.match(lparen_only_pattern, (" " + lines[start - 1].rstrip())[-1])
+            and re.match(lparen_only_pattern, (lines[start].lstrip() + " ")[0])
         ):
             lines[start - 1] = lines[start - 1].rstrip() + lines[start].lstrip()
             lines.pop(start)
@@ -83,9 +85,7 @@ def remove_excessive_indent(lines: Sequence[str]) -> None:
     if len(lines) < 2:
         return
 
-    indents = [
-        len(line) - len(line.lstrip()) for line in lines
-    ]
+    indents = [len(line) - len(line.lstrip()) for line in lines]
     best_indents = [indents[0]]
     for i, indent in enumerate(indents[1:], start=1):
         previous_indent = 0
@@ -99,10 +99,7 @@ def remove_excessive_indent(lines: Sequence[str]) -> None:
     deindents = [0 for _ in lines]
 
     for i, line, indent, best_indent in zip(
-        range(len(lines)),
-        lines,
-        indents,
-        best_indents
+        range(len(lines)), lines, indents, best_indents
     ):
         overindent = indent - best_indent
         if overindent > 0:
@@ -141,7 +138,7 @@ def format_code(source: str) -> str:
         return source
 
     lines = list(source.splitlines(keepends=False))
-    line_end_character = source.splitlines(keepends=True)[0][len(lines[0]):]
+    line_end_character = source.splitlines(keepends=True)[0][len(lines[0]) :]
 
     collapse_rparen_lines(lines)
     collapse_lparen_lines(lines)
