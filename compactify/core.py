@@ -51,7 +51,18 @@ def collapse_rparen_lines(lines: Sequence[str]) -> None:
     rparen_pattern = r"^\s*" + rparen_only_pattern + rparen_or_ws_pattern + r"*$"
 
     for group in reversed(_group_matching_lines(lines, rparen_pattern)):
+        if group[-1] + 1 < len(lines) and re.match(
+            rparen_only_pattern, (lines[group[-1] + 1].lstrip() + " ")[0]
+        ):
+            residual = lines[group[-1] + 1].lstrip()
+        else:
+            residual = ""
+
         _merge_lines(lines, group)
+
+        if residual:
+            lines[group[0]] += residual
+            del lines[group[0] + 1]
 
 
 def collapse_lparen_lines(lines: Sequence[str]) -> None:
